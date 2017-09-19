@@ -49,7 +49,7 @@ struct node_list {
     struct npheap_cmd cmd;
     //  struct mutex lock;
     //long offset;
-    //unsigned long km_addr_start;
+    unsigned long km_addr_start;
     unsigned long phys_addr;
 	//unsigned long size;
     struct list_head list;
