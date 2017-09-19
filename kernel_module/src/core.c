@@ -52,7 +52,7 @@ struct node_list {
 	long offset;
 	//unsigned long km_addr_start;
 	unsigned long phys_addr;
-	unsigned long size;
+	//unsigned long size;
 	struct list_head list;
 };
 
@@ -106,16 +106,16 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 	  tmp->offset = vma->vm_pgoff;
 	  //tmp->km_addr_start = vma->vm_start;
 	  tmp->phys_addr = phys_addr;
-	  tmp->size = size;
+	  tmp->cmd.size = size;
 	  list_add(&(tmp->list), &(ndlist.list));
 
   } else if (found == 1){
 	  int ret;
-	  printk(KERN_INFO "Actual size vs new size  %zu %zu ", tmp->size, size);
+	  printk(KERN_INFO "Actual size vs new size  %zu %zu ", tmp->cmd.size, size);
 	  if((ret = remap_pfn_range(vma,
 			  vma->vm_start,
 			  tmp->phys_addr,
-			  tmp->size,
+			  tmp->cmd.size,
 			  vma->vm_page_prot)) < 0) {
 		  printk(KERN_ERR "ret is %d\n", ret);
 		  return ret;

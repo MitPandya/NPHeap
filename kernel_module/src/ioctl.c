@@ -51,7 +51,7 @@ struct node_list {
     long offset;
     //unsigned long km_addr_start;
     unsigned long phys_addr;
-	unsigned long size;
+	//unsigned long size;
     struct list_head list;
 };
 
@@ -103,7 +103,7 @@ long npheap_getsize(struct npheap_cmd __user *user_cmd)
 		  break;
 	  }
 	}
-	return tmp->size;
+	return tmp->cmd.size;
 }
 long npheap_delete(struct npheap_cmd __user *user_cmd)
 {
