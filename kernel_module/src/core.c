@@ -47,10 +47,10 @@
 extern struct miscdevice npheap_dev;
 
 struct node_list {
-	//	struct npheap_cmd cmd;
+	struct npheap_cmd cmd;
 	//  struct mutex lock;
 	long offset;
-	unsigned long km_addr_start;
+	//unsigned long km_addr_start;
 	unsigned long phys_addr;
 	unsigned long size;
 	struct list_head list;
@@ -77,8 +77,8 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 
 	  if (vma->vm_pgoff == tmp->offset){
 		  found = 1;
-		  vma->vm_start = tmp->km_addr_start;
-		  printk(KERN_INFO "found %zu %zu %x \n",tmp->offset, vma->vm_pgoff, tmp->km_addr_start);
+		  //vma->vm_start = tmp->km_addr_start;
+		  printk(KERN_INFO "found %zu %zu %x \n",tmp->offset, vma->vm_pgoff);
 		  break;
 	  }
   }
@@ -104,7 +104,7 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 
 	  tmp = (struct node_list *)kmalloc(sizeof(struct node_list), GFP_KERNEL);
 	  tmp->offset = vma->vm_pgoff;
-	  tmp->km_addr_start = vma->vm_start;
+	  //tmp->km_addr_start = vma->vm_start;
 	  tmp->phys_addr = phys_addr;
 	  tmp->size = size;
 	  list_add(&(tmp->list), &(ndlist.list));

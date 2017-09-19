@@ -46,13 +46,13 @@
 
 
 struct node_list {
-        //      struct npheap_cmd cmd;
-        //  struct mutex lock;
-        long offset;
-        unsigned long km_addr_start;
-        unsigned long phys_addr;
+    struct npheap_cmd cmd;
+    //  struct mutex lock;
+    long offset;
+    //unsigned long km_addr_start;
+    unsigned long phys_addr;
 	unsigned long size;
-        struct list_head list;
+    struct list_head list;
 };
 
 extern struct node_list ndlist;
@@ -99,7 +99,7 @@ long npheap_getsize(struct npheap_cmd __user *user_cmd)
 	  tmp= list_entry(pos, struct node_list, list);
 
 	  if (user_cmd->offset == tmp->offset){
-		  printk(KERN_INFO "found in ioctl %zu %zu %x \n",tmp->offset, user_cmd->offset, tmp->km_addr_start);
+		  printk(KERN_INFO "found in ioctl %zu %zu %x \n",tmp->offset, user_cmd->offset);
 		  break;
 	  }
 	}
