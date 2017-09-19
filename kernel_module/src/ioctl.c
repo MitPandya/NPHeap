@@ -118,7 +118,7 @@ long npheap_getsize(struct npheap_cmd __user *user_cmd)
 	  tmp = list_entry(pos, struct node_list, list);
 
 	  if (user_cmd->offset == tmp->cmd.offset){
-		  printk(KERN_INFO "found in ioctl %zu %zu %x \n",tmp->cmd.offset, user_cmd->offset);
+		  printk(KERN_INFO "found in ioctl %zu %zu\n",tmp->cmd.offset, user_cmd->offset);
 		  break;
 	  }
 	}
