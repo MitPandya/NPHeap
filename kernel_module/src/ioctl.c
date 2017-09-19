@@ -48,7 +48,7 @@
 struct node_list {
     struct npheap_cmd cmd;
     //  struct mutex lock;
-    long offset;
+    //long offset;
     //unsigned long km_addr_start;
     unsigned long phys_addr;
 	//unsigned long size;
@@ -81,7 +81,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
     struct list_head *pos;
     list_for_each(pos, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
-        if(user_cmd->offset == tmp->offset){
+        if(user_cmd->offset == tmp->cmd.offset){
             tmp->cmd.op = 0;
             break;
         }
@@ -97,7 +97,7 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
     struct list_head *pos;
     list_for_each(pos, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
-        if(user_cmd->offset == tmp->offset){
+        if(user_cmd->offset == tmp->cmd.offset) {
             tmp->cmd.op = 1;
             break;
         }
@@ -113,12 +113,12 @@ long npheap_getsize(struct npheap_cmd __user *user_cmd)
     //    return -1;
     //}
 	struct node_list *tmp;
-	struct list_head* pos;
-	list_for_each ( pos , & ndlist.list ){
-	  tmp= list_entry(pos, struct node_list, list);
+	struct list_head *pos;
+	list_for_each(pos, &ndlist.list) {
+	  tmp = list_entry(pos, struct node_list, list);
 
-	  if (user_cmd->offset == tmp->offset){
-		  printk(KERN_INFO "found in ioctl %zu %zu %x \n",tmp->offset, user_cmd->offset);
+	  if (user_cmd->offset == tmp->cmd.offset){
+		  printk(KERN_INFO "found in ioctl %zu %zu %x \n",tmp->cmd.offset, user_cmd->offset);
 		  break;
 	  }
 	}
@@ -126,6 +126,17 @@ long npheap_getsize(struct npheap_cmd __user *user_cmd)
 }
 long npheap_delete(struct npheap_cmd __user *user_cmd)
 {
+    struct node_list *tmp;
+    struct list_head *pos;
+    list_for_each(pos, &ndlist.list) {
+      tmp = list_entry(pos, struct node_list, list);
+
+      if (user_cmd->offset == tmp->cmd.offset){
+            //Delete Code
+            //kfree(tmp->cmd->data);
+            break;
+      }
+    }
     return 0;
 }
 

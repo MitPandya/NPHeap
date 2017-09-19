@@ -49,7 +49,7 @@ extern struct miscdevice npheap_dev;
 struct node_list {
 	struct npheap_cmd cmd;
 	//  struct mutex lock;
-	long offset;
+	//long offset;
 	//unsigned long km_addr_start;
 	unsigned long phys_addr;
 	//unsigned long size;
@@ -75,10 +75,10 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
   list_for_each ( pos , & ndlist.list ){
 	  tmp= list_entry(pos, struct node_list, list);
 
-	  if (vma->vm_pgoff == tmp->offset){
+	  if (vma->vm_pgoff == tmp->cmd.offset){
 		  found = 1;
 		  //vma->vm_start = tmp->km_addr_start;
-		  printk(KERN_INFO "found %zu %zu %x \n",tmp->offset, vma->vm_pgoff);
+		  printk(KERN_INFO "found %zu %zu %x \n",tmp->cmd.offset, vma->vm_pgoff);
 		  break;
 	  }
   }
@@ -103,7 +103,8 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 	  printk(KERN_INFO "phys addr is %x %zu %p %p \n", phys_addr, phys_addr, phys_addr, vma->vm_start);
 
 	  tmp = (struct node_list *)kmalloc(sizeof(struct node_list), GFP_KERNEL);
-	  tmp->offset = vma->vm_pgoff;
+	  tmp->cmd.offset = vma->vm_pgoff;
+	  tmp->cmd->data = kmemory;
 	  //tmp->km_addr_start = vma->vm_start;
 	  tmp->phys_addr = phys_addr;
 	  tmp->cmd.size = size;
