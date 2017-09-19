@@ -77,12 +77,31 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
     
     int s = list_empty(&(ndlist.list));
     printk(KERN_INFO "Is List Empty %d\n", s);*/
+    struct node_list *tmp;
+    struct list_head *pos;
+    list_for_each(pos, &ndlist.list) {
+        tmp = list_entry(pos, struct node_list, list);
+        if(user_cmd->offset == tmp->offset){
+            tmp->cmd.op = 0;
+            break;
+        }
+    }
     mutex_lock(&lock);
+
     return 0;
 }     
 
 long npheap_unlock(struct npheap_cmd __user *user_cmd)
 {
+    struct node_list *tmp;
+    struct list_head *pos;
+    list_for_each(pos, &ndlist.list) {
+        tmp = list_entry(pos, struct node_list, list);
+        if(user_cmd->offset == tmp->offset){
+            tmp->cmd.op = 1;
+            break;
+        }
+    }
     mutex_unlock(&lock);
     return 0;
 }
