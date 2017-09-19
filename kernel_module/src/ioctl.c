@@ -133,7 +133,7 @@ long npheap_delete(struct npheap_cmd __user *user_cmd)
 
       if (user_cmd->offset == tmp->cmd.offset){
             //Delete Code
-            //kfree(tmp->cmd->data);
+            //kfree(tmp->cmd.data);
             break;
       }
     }

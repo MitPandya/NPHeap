@@ -104,7 +104,7 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 
 	  tmp = (struct node_list *)kmalloc(sizeof(struct node_list), GFP_KERNEL);
 	  tmp->cmd.offset = vma->vm_pgoff;
-	  tmp->cmd->data = kmemory;
+	  tmp->cmd.data = kmemory;
 	  //tmp->km_addr_start = vma->vm_start;
 	  tmp->phys_addr = phys_addr;
 	  tmp->cmd.size = size;
