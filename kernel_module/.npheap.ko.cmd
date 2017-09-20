@@ -1,0 +1,1 @@
+cmd_/home/mhpandya/NPHeap/kernel_module/npheap.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/mhpandya/NPHeap/kernel_module/npheap.ko /home/mhpandya/NPHeap/kernel_module/npheap.o /home/mhpandya/NPHeap/kernel_module/npheap.mod.o

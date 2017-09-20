@@ -19,7 +19,7 @@ void *npheap_alloc(int devfd, __u64 offset, __u64 size)
 	    printf("\nmmapped mem address %p\n",x);
 	    exit(1);
 	}
-	printf("\nmmapped mem address %p\n",x);
+//	printf("\nmmapped mem address %p\n",x);
 	
      return (void *)x;
 }

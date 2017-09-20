@@ -85,9 +85,7 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 
   if ( found == 0) {
 	  void *kmemory = kmalloc(size, GFP_KERNEL);
-	  printk(KERN_INFO "I got: %zu bytes of memory\n", ksize(kmemory));
-	  printk(KERN_INFO "VMA offset: %zu, Offset: %zu", vma->vm_pgoff, vma->vm_pgoff*PAGE_SHIFT);
-	  printk(KERN_INFO "flag is %zu", vma->vm_page_prot);
+	  printk(KERN_INFO "I got: %zu bytes of memory, offset is %zu\n", ksize(kmemory),vma->vm_pgoff);
 	  phys_addr = (unsigned long)virt_to_phys((void *)kmemory) >> PAGE_SHIFT;
 	  //	        printk(KERN_INFO "VMA offset: %zu", vma->vm_pgoff);
 
@@ -100,7 +98,7 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 		  printk(KERN_ERR "ret is %d\n", ret);
 		  return ret;
 	  }
-	  printk(KERN_INFO "phys addr is %x %zu %p %p \n", phys_addr, phys_addr, phys_addr, vma->vm_start);
+	  printk(KERN_INFO "phys addr is %x \n", phys_addr);
 
 	  tmp = (struct node_list *)kmalloc(sizeof(struct node_list), GFP_KERNEL);
 	  tmp->cmd.offset = vma->vm_pgoff;
@@ -121,7 +119,7 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 		  printk(KERN_ERR "ret is %d\n", ret);
 		  return ret;
 	  }
-
+	printk(KERN_INFO "seg fault??");
   }
 
 	return 0;

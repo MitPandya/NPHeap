@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     for(i = 0; i < number_of_objects; i++)
     {
         size = npheap_getsize(devfd,i);
-	fprintf(stdout,"size is %d \n", size);
+	//fprintf(stdout,"size is %d \n", size);
         if(size!=0){
         mapped_data = (char *)npheap_alloc(devfd,i,npheap_getsize(devfd,i));
 	}else
