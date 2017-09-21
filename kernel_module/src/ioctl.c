@@ -95,7 +95,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
         tmp->cmd.data = NULL;
         tmp->km_addr_start = NULL;
         tmp->phys_addr = NULL;
-        printk("initialized and locked node %zu\n",tmp->cmd.offset);
+        printk(KERN_INFO "initialized and locked node %zu\n",tmp->cmd.offset);
         mutex_init(&(tmp->lock));
         mutex_lock(&(tmp->lock));
         list_add(&(tmp->list), &(ndlist.list));
@@ -107,7 +107,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
         list_for_each_safe(pos, q, &ndlist.list) {
             tmp = list_entry(pos, struct node_list, list);
             if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset) {
-                printk("node exists and unlocked, now locked %zu\n",tmp->cmd.offset);
+                printk(KERN_INFO "node exists and unlocked, now locked %zu\n",tmp->cmd.offset);
                 tmp->cmd.op = 0;
                 mutex_lock(&(tmp->lock));
                 return 1;   //pass
@@ -131,8 +131,7 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
         //check if offset is same and it was locked before
         if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset && tmp->cmd.op == 0) {
             tmp->cmd.op = 1;
-            user_cmd->op = 1;
-            printk("node %zu , unlocked\n", tmp->cmd.offset);
+            printk(KERN_INFO "node %zu , unlocked\n", tmp->cmd.offset);
             mutex_unlock(&(tmp->lock));
             return 1;   //pass
         }
@@ -182,7 +181,7 @@ long npheap_delete(struct npheap_cmd __user *user_cmd)
     struct list_head *pos1, *q1;
     list_for_each_safe(pos1, q1, &ndlist.list) {
         tmp1 = list_entry(pos1, struct node_list, list);
-        printk("del offset is %zu \n",tmp1->cmd.offset);
+        printk(KERN_INFO "del offset is %zu \n",tmp1->cmd.offset);
     }
 
     return 0;
