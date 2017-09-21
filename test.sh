@@ -1,3 +1,4 @@
+sudo dmesg -C
 sudo rmmod npheap
 cd kernel_module
 sudo make clean
