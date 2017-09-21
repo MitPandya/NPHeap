@@ -89,6 +89,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
     if(isLock == 0) {
         //creade new node
         struct node_list *tmp;
+        tmp = (struct node_list *)kmalloc(sizeof(struct node_list), GFP_KERNEL);
         tmp->cmd.offset = cmd.offset >> PAGE_SHIFT;
         tmp->cmd.op = 0;
         mutex_init(&(tmp->lock));
