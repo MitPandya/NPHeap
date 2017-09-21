@@ -48,7 +48,7 @@ extern struct miscdevice npheap_dev;
 
 struct node_list {
 	struct npheap_cmd cmd;
-	//  struct mutex lock;
+	struct mutex lock;
 	//long offset;
 	unsigned long km_addr_start;
 	unsigned long phys_addr;
@@ -100,6 +100,7 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 	  printk(KERN_INFO "phys addr is %x %zu %p %p \n", phys_addr, phys_addr, phys_addr, vma->vm_start);
 
 	  tmp = (struct node_list *)kmalloc(sizeof(struct node_list), GFP_KERNEL);
+	  mutex_init(tmp->lock);
 	  tmp->cmd.offset = vma->vm_pgoff;
 	  tmp->cmd.data = kmemory;
 	  tmp->km_addr_start = vma->vm_start;

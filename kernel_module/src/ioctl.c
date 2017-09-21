@@ -71,6 +71,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
         tmp = list_entry(pos, struct node_list, list);
         if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset){
             tmp->cmd.op = 0;
+            mutex_lock(tmp->lock);
             break;
         }
     }
@@ -91,6 +92,7 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
         tmp = list_entry(pos, struct node_list, list);
         if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset) {
             tmp->cmd.op = 1;
+            mutex_unlock(tmp->lock);
             break;
         }
     }
