@@ -74,7 +74,7 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 
 	  if (vma->vm_pgoff == tmp->cmd.offset){
 		  found = 1;
-		  vma->vm_start = tmp->km_addr_start;
+		  //vma->vm_start = tmp->km_addr_start;
 		  printk(KERN_INFO "found %zu %zu %x \n",tmp->cmd.offset, vma->vm_pgoff);
 		  break;
 	  }
