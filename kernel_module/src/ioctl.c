@@ -99,7 +99,6 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
         mutex_init(&(tmp->lock));
         mutex_lock(&(tmp->lock));
         list_add(&(tmp->list), &(ndlist.list));
-        mutex_unlock(&lock);
         return 1;   //pass
     } else if(isLock == 2) {
         //lock the existing node
@@ -110,13 +109,11 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
             if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset) {
                 printk("node exists and unlocked, now locked %zu\n",tmp->cmd.offset);
                 tmp->cmd.op = 0;
-                mutex_unlock(&lock);
                 mutex_lock(&(tmp->lock));
                 return 1;   //pass
             }
         }
     }
-    mutex_unlock(&lock);
     return 0;   //fail
 }     
 
@@ -140,6 +137,7 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
             return 1;   //pass
         }
     }
+    mutex_unlock(&lock);
     return 0;   //fail
 }
 
