@@ -91,7 +91,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
         tmp = (struct node_list *)kmalloc(sizeof(struct node_list), GFP_KERNEL);
         tmp->cmd.offset = cmd.offset >> PAGE_SHIFT;
         tmp->cmd.op = 0;
-        //user_cmd->op = 0;
+        user_cmd->op = 0;
         tmp->cmd.size = 0;
         tmp->cmd.data = NULL;
         tmp->km_addr_start = NULL;
@@ -111,7 +111,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
             if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset) {
                 printk("node exists and unlocked, now locked %zu\n",tmp->cmd.offset);
                 tmp->cmd.op = 0;
-                //user_cmd->op = 0;
+                user_cmd->op = 0;
                 mutex_unlock(&lock);
                 mutex_lock(&(tmp->lock));
                 return 1;   //pass
@@ -128,7 +128,7 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
     if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
         return -1;
     }
-    
+
     struct node_list *tmp;
     struct list_head *pos, *q;
     list_for_each_safe(pos, q, &ndlist.list) {
