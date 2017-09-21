@@ -84,7 +84,7 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
   unsigned long size = vma->vm_end - vma->vm_start;
 
   found = find(vma);
-  
+
   if ( found == 0) {
 	  void *kmemory = kmalloc(size, GFP_KERNEL);
 	  printk(KERN_INFO "Node %zu got: %zu bytes of memory\n",vma->vm_pgoff, ksize(kmemory));
@@ -110,6 +110,7 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 				tmp->km_addr_start = vma->vm_start;
 				tmp->phys_addr = phys_addr;
 				tmp->cmd.size = size;
+				break;
 		    }
 		}
 	  //list_add(&(tmp->list), &(ndlist.list));

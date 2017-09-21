@@ -85,12 +85,14 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
     }
 
     long isLock = is_locked(cmd.offset);
+    mutex_lock(&lock);
     if(isLock == 0) {
         //creade new node
         struct node_list *tmp;
         tmp = (struct node_list *)kmalloc(sizeof(struct node_list), GFP_KERNEL);
         tmp->cmd.offset = cmd.offset >> PAGE_SHIFT;
         tmp->cmd.op = 0;
+        user_cmd->op = 0;
         tmp->cmd.size = 0;
         printk("initialized and locked node %zu\n",tmp->cmd.offset);
         mutex_init(&(tmp->lock));
@@ -106,12 +108,12 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
             if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset) {
                 printk("node exists and unlocked, now locked %zu\n",tmp->cmd.offset);
                 tmp->cmd.op = 0;
+                user_cmd->op = 0;
                 mutex_lock(&(tmp->lock));
                 return 1;   //pass
             }
         }
     }
-    mutex_lock(&lock);
 
     return 0;   //fail
 }     
@@ -122,6 +124,7 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
     if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
         return -1;
     }
+    mutex_unlock(&lock);
     struct node_list *tmp;
     struct list_head *pos, *q;
     list_for_each_safe(pos, q, &ndlist.list) {
@@ -129,12 +132,12 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
         //check if offset is same and it was locked before
         if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset && tmp->cmd.op == 0) {
             tmp->cmd.op = 1;
+            user_cmd->op = 1;
             printk("node %zu , unlocked\n", tmp->cmd.offset);
             mutex_unlock(&(tmp->lock));
             return 1;   //pass
         }
     }
-    mutex_unlock(&lock);
     return 0;   //fail
 }
 
