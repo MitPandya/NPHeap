@@ -116,7 +116,6 @@ long npheap_getsize(struct npheap_cmd __user *user_cmd)
 	struct list_head *pos, *q;
 	list_for_each_safe(pos, q, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
-        printk(KERN_INFO "Rachit %zu\n",tmp->cmd.offset);
         if ((user_cmd->offset >> PAGE_SHIFT) == tmp->cmd.offset){
             printk(KERN_INFO "found in ioctl %zu %zu\n",tmp->cmd.offset, user_cmd->offset);
             return tmp->cmd.size;

@@ -69,9 +69,6 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
   unsigned long phys_addr;
   unsigned long size = vma->vm_end - vma->vm_start;
 
-  int s = list_empty(&(ndlist.list));
-  printk(KERN_INFO "is list empty %d",s);
-
   list_for_each ( pos , & ndlist.list ){
 	  tmp= list_entry(pos, struct node_list, list);
 
