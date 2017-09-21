@@ -44,6 +44,7 @@
 #include <linux/mutex.h>
 #include <linux/list.h>
 
+
 extern struct miscdevice npheap_dev;
 
 struct node_list {
@@ -139,7 +140,7 @@ int npheap_init(void)
 		printk(KERN_ERR "Unable to register \"npheap\" misc device\n");
 	else{
 		INIT_LIST_HEAD(&ndlist.list);
-		mutex_init(&lock);
+		DEFINE_MUTEX(&lock);
 		printk(KERN_ERR "\"npheap\" misc device installed\n");
 	}
 	return ret;

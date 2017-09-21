@@ -1,4 +1,5 @@
 sudo dmesg -C
+rm -f *.log
 sudo rmmod npheap
 cd kernel_module
 sudo make clean
