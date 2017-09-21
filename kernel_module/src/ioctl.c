@@ -85,7 +85,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
     }
 
     long isLock = is_locked(cmd.offset);
-    mutex_lock(&lock);
+    //mutex_lock(&lock);
     if(isLock == 0) {
         //creade new node
         struct node_list *tmp;
@@ -124,7 +124,7 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
     if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
         return -1;
     }
-    mutex_unlock(&lock);
+    //mutex_unlock(&lock);
     struct node_list *tmp;
     struct list_head *pos, *q;
     list_for_each_safe(pos, q, &ndlist.list) {
