@@ -119,10 +119,10 @@ long npheap_getsize(struct npheap_cmd __user *user_cmd)
 
 	  if (user_cmd->offset == tmp->cmd.offset){
 		  printk(KERN_INFO "found in ioctl %zu %zu\n",tmp->cmd.offset, user_cmd->offset);
-		  break;
+          return tmp->cmd.size;
 	  }
 	}
-	return tmp->cmd.size;
+	return 0;
 }
 long npheap_delete(struct npheap_cmd __user *user_cmd)
 {
