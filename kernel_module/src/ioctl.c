@@ -85,13 +85,14 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
     }
 
     long isLock = is_locked(cmd.offset);
-
+    printk("islock %zu \n",isLock);
     if(isLock == 0) {
         //creade new node
         struct node_list *tmp;
         tmp = (struct node_list *)kmalloc(sizeof(struct node_list), GFP_KERNEL);
         tmp->cmd.offset = cmd.offset >> PAGE_SHIFT;
         tmp->cmd.op = 0;
+        printk("initialized and locked node %zu\n",tmp->cmd.offset);
         mutex_init(&(tmp->lock));
         mutex_lock(&(tmp->lock));
         list_add(&(tmp->list), &(ndlist.list));
@@ -103,11 +104,12 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
         list_for_each_safe(pos, q, &ndlist.list) {
             tmp = list_entry(pos, struct node_list, list);
             if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset) {
+                printk("node exists but is unlocked %zu\n",tmp->cmd.offset);
                 tmp->cmd.op = 0;
                 mutex_lock(&(tmp->lock));
+                return 1;   //pass
             }
         }
-        return 1;   //pass
     }
     //mutex_lock(&lock);
 
