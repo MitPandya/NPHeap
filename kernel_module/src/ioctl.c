@@ -61,27 +61,15 @@ extern struct mutex lock;
 // 
 long npheap_lock(struct npheap_cmd __user *user_cmd)
 {
-/*    struct node_list *tmp;
-
-    if(list_empty(&(ndlist.list))) {
-	printk(KERN_INFO "init list");
-        INIT_LIST_HEAD(&ndlist.list);
-    }
-    INIT_LIST_HEAD(&ndlist.list);
-
-    tmp = (struct node_list *)kmalloc(sizeof(struct node_list), GFP_KERNEL);
-    if(copy_from_user(&(tmp->cmd), user_cmd, sizeof(tmp->cmd))) {
+    struct npheap_cmd cmd;
+    if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
         return -1;
     }
-    list_add(&(tmp->list), &(ndlist.list));
-    
-    int s = list_empty(&(ndlist.list));
-    printk(KERN_INFO "Is List Empty %d\n", s);*/
     struct node_list *tmp;
-    struct list_head *pos;
-    list_for_each(pos, &ndlist.list) {
+    struct list_head *pos, *q;
+    list_for_each(pos, q, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
-        if(user_cmd->offset == tmp->cmd.offset){
+        if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset){
             tmp->cmd.op = 0;
             break;
         }
@@ -93,11 +81,15 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
 
 long npheap_unlock(struct npheap_cmd __user *user_cmd)
 {
+    struct npheap_cmd cmd;
+    if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
+        return -1;
+    }
     struct node_list *tmp;
-    struct list_head *pos;
-    list_for_each(pos, &ndlist.list) {
+    struct list_head *pos, *q;
+    list_for_each(pos, q, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
-        if(user_cmd->offset == tmp->cmd.offset) {
+        if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset) {
             tmp->cmd.op = 1;
             break;
         }
