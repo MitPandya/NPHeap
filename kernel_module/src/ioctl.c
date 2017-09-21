@@ -64,10 +64,10 @@ long is_locked(__u64 offset) {
     list_for_each_safe(pos, q, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
         if((offset >> PAGE_SHIFT) == tmp->cmd.offset) {
-            if(tmp->cmd.op == 0) {
+            if(tmp->cmd.op == 0 || mutex_is_locked(&lock)) {
                 //found but locked
                 return 1;
-            } else if(tmp->cmd.op == 1) {
+            } else if(tmp->cmd.op == 1 && mutex_is_locked(&lock) == 0) {
                 //found but unlocked
                 return 2;
             }
@@ -83,8 +83,8 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
     if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
         return -1;
     }
-    mutex_lock(&lock);
     long isLock = is_locked(cmd.offset);
+    mutex_lock(&lock);
     if(isLock == 0) {
         //creade new node
         struct node_list *tmp;
