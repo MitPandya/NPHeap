@@ -61,7 +61,7 @@ extern struct mutex lock;
 // 
 long npheap_lock(struct npheap_cmd __user *user_cmd)
 {
-    struct npheap_cmd cmd;
+    /*struct npheap_cmd cmd;
     if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
         return -1;
     }
@@ -74,7 +74,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
             //mutex_lock(tmp->lock);
             break;
         }
-    }
+    }*/
     mutex_lock(&lock);
 
     return 0;
@@ -82,7 +82,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
 
 long npheap_unlock(struct npheap_cmd __user *user_cmd)
 {
-    struct npheap_cmd cmd;
+    /*struct npheap_cmd cmd;
     if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
         return -1;
     }
@@ -95,7 +95,7 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
             //mutex_unlock(tmp->lock);
             break;
         }
-    }
+    }*/
     mutex_unlock(&lock);
     return 0;
 }
