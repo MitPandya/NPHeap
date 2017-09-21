@@ -130,10 +130,20 @@ long npheap_delete(struct npheap_cmd __user *user_cmd)
         tmp = list_entry(pos, struct node_list, list);
         if ((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset){
             //Delete Code
-            //kfree(tmp->cmd.data);
+	    printk(KERN_INFO "deleting node %zu\n",tmp->cmd.offset);
+	    //list_del(pos);
+	    tmp->cmd.size = 0;
+            kfree(tmp->cmd.data);
             break;
         }
     }
+    struct node_list *tmp1;
+    struct list_head *pos1, *q1;
+    list_for_each_safe(pos1, q1, &ndlist.list) {
+        tmp1 = list_entry(pos1, struct node_list, list);
+        printk("del offset is %zu \n",tmp1->cmd.offset);
+    }
+
     return 0;
 }
 

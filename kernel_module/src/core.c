@@ -58,15 +58,17 @@ struct node_list {
 
 struct node_list ndlist;
 struct mutex lock;
+struct node_list *tmp;
+struct list_head *pos, *q;
 
-int find(struct list_head *pos, struct list_head *q, struct node_list *tmp, struct vm_area_struct *vma) {
+int find(struct vm_area_struct *vma) {
 	
 	list_for_each_safe(pos, q, &ndlist.list) {
 		tmp= list_entry(pos, struct node_list, list);
 
-		if (vma->vm_pgoff == tmp->cmd.offset){
+		if (vma->vm_pgoff == tmp->cmd.offset && tmp->cmd.size > 0){
 			//vma->vm_start = tmp->km_addr_start;
-			printk(KERN_INFO "found %zu %zu %x \n",tmp->cmd.offset, vma->vm_pgoff);
+			printk(KERN_INFO "found %zu %zu \n",tmp->cmd.offset, vma->vm_pgoff);
 			return 1;
 		}
   	}
@@ -78,13 +80,11 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
  // struct node_list pos;
   //pos = ndlist;
   int found = 0;
-  struct node_list *tmp;
-  struct list_head *pos, *q;
   unsigned long phys_addr;
   unsigned long size = vma->vm_end - vma->vm_start;
 
-  found = find(pos, q, tmp, vma);
-
+  found = find(vma);
+  printk("found %d\n",found);
   if ( found == 0) {
 	  void *kmemory = kmalloc(size, GFP_KERNEL);
 	  printk(KERN_INFO "I got: %zu bytes of memory\n", ksize(kmemory));
