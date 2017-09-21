@@ -97,9 +97,9 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
         tmp->phys_addr = NULL;
         printk("initialized and locked node %zu\n",tmp->cmd.offset);
         mutex_init(&(tmp->lock));
-        mutex_unlock(&lock);
         mutex_lock(&(tmp->lock));
         list_add(&(tmp->list), &(ndlist.list));
+        mutex_unlock(&lock);
         return 1;   //pass
     } else if(isLock == 2) {
         //lock the existing node
