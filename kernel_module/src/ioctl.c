@@ -111,7 +111,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
             }
         }
     }
-    //mutex_lock(&lock);
+    mutex_lock(&lock);
 
     return 0;   //fail
 }     
@@ -134,7 +134,7 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
             return 1;   //pass
         }
     }
-    //mutex_unlock(&lock);
+    mutex_unlock(&lock);
     return 0;   //fail
 }
 
