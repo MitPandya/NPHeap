@@ -92,11 +92,11 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 	  //	        printk(KERN_INFO "VMA offset: %zu", vma->vm_pgoff);
 
 	  int ret;
-	  if((ret = remap_pfn_range(vma,
+	  if(ret = remap_pfn_range(vma,
 			  vma->vm_start,
 			  phys_addr,
 			  size,
-			  vma->vm_page_prot)) < 0) {
+			  vma->vm_page_prot)) {
 		  printk(KERN_ERR "ret is %d\n", ret);
 		  return ret;
 	  }
@@ -110,7 +110,7 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 				tmp->km_addr_start = vma->vm_start;
 				tmp->phys_addr = phys_addr;
 				tmp->cmd.size = size;
-				break;
+				return 0;
 		    }
 		}
 	  //list_add(&(tmp->list), &(ndlist.list));
@@ -118,11 +118,11 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
   } else if (found == 1){
 	  int ret;
 	  printk(KERN_INFO "Actual size vs new size  %zu %zu ", tmp->cmd.size, size);
-	  if((ret = remap_pfn_range(vma,
+	  if(ret = remap_pfn_range(vma,
 			  vma->vm_start,
 			  tmp->phys_addr,
 			  tmp->cmd.size,
-			  vma->vm_page_prot)) < 0) {
+			  vma->vm_page_prot)) {
 		  printk(KERN_ERR "ret is %d\n", ret);
 		  return ret;
 	  }

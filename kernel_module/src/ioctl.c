@@ -64,12 +64,13 @@ long is_locked(__u64 offset) {
     list_for_each_safe(pos, q, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
         if((offset >> PAGE_SHIFT) == tmp->cmd.offset) {
-            if(tmp->cmd.op == 1 && mutex_is_locked(&lock) == 0) {
-                //found but unlocked
-                return 2;
-            } else {
+            if(tmp->cmd.op == 0) {
                 //found but locked
                 return 1;
+            }
+            else if(tmp->cmd.op == 1) {
+                //found but unlocked
+                return 2;
             }
         }
     }
@@ -84,7 +85,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
         return -1;
     }
     long isLock = is_locked(cmd.offset);
-    mutex_lock(&lock);
+    
     if(isLock == 0) {
         //creade new node
         struct node_list *tmp;
@@ -114,6 +115,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
             }
         }
     }
+    mutex_lock(&lock);
     return 0;   //fail
 }     
 
@@ -178,13 +180,6 @@ long npheap_delete(struct npheap_cmd __user *user_cmd)
             return 1;
         }
     }
-    struct node_list *tmp1;
-    struct list_head *pos1, *q1;
-    list_for_each_safe(pos1, q1, &ndlist.list) {
-        tmp1 = list_entry(pos1, struct node_list, list);
-        printk(KERN_INFO "del offset is %zu \n",tmp1->cmd.offset);
-    }
-
     return 0;
 }
 
