@@ -108,19 +108,20 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
 
 long npheap_getsize(struct npheap_cmd __user *user_cmd)
 {
-	struct npheap_cmd n_cmd;
-	if(copy_from_user(&n_cmd, user_cmd, sizeof(n_cmd))) {
+	struct npheap_cmd *n_cmd;
+	n_cmd = (struct node_list *)kmalloc(sizeof(struct node_list), GFP_KERNEL);
+	if(copy_from_user(n_cmd, user_cmd, sizeof(struct node_list))) {
 		printk(KERN_ERR "error in copy_from_user");
         	return -1;
 	}
-	n_cmd.offset = n_cmd.offset/PAGE_SIZE;
+	n_cmd->offset = n_cmd->offset/PAGE_SIZE;
 	
 	struct node_list *tmp;
 	struct list_head *pos;
 	list_for_each(pos, &ndlist.list) {
 	  tmp = list_entry(pos, struct node_list, list);
-	  if (n_cmd.offset == tmp->cmd.offset){
-		  printk(KERN_INFO "found in ioctl %zu %zu, size is %zu \n",tmp->cmd.offset, n_cmd.offset,tmp->cmd.size);
+	  if (n_cmd->offset == tmp->cmd.offset){
+		  printk(KERN_INFO "found in ioctl %zu %zu, size is %zu \n",tmp->cmd.offset, n_cmd->offset,tmp->cmd.size);
 		  return tmp->cmd.size;
 	  }
 	}
