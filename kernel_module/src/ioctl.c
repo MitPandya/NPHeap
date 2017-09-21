@@ -85,7 +85,6 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
     }
 
     long isLock = is_locked(cmd.offset);
-    printk("islock %zu \n",isLock);
     if(isLock == 0) {
         //creade new node
         struct node_list *tmp;
@@ -105,7 +104,7 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
         list_for_each_safe(pos, q, &ndlist.list) {
             tmp = list_entry(pos, struct node_list, list);
             if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset) {
-                printk("node exists but is unlocked %zu\n",tmp->cmd.offset);
+                printk("node exists and unlocked, now locked %zu\n",tmp->cmd.offset);
                 tmp->cmd.op = 0;
                 mutex_lock(&(tmp->lock));
                 return 1;   //pass
@@ -130,6 +129,7 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
         //check if offset is same and it was locked before
         if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset && tmp->cmd.op == 0) {
             tmp->cmd.op = 1;
+            printk("node %zu , unlocked\n", tmp->cmd.offset);
             mutex_unlock(&(tmp->lock));
             return 1;   //pass
         }
@@ -149,8 +149,6 @@ long npheap_getsize(struct npheap_cmd __user *user_cmd)
 	list_for_each_safe(pos, q, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
         if ((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset){
-            printk(KERN_INFO "found in ioctl %zu %zu\n",tmp->cmd.offset,
-                cmd.offset);
             return tmp->cmd.size;
         }
 	}
