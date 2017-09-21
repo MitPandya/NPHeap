@@ -108,16 +108,16 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
 
 long npheap_getsize(struct npheap_cmd __user *user_cmd)
 {
-    //struct npheap_cmd cmd;
-    //if(copy_from_user(&cmd, user_cmd, sizeof(cmd))) {
-    //    return -1;
-    //}
+    struct npheap_cmd cmd;
+    if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
+        return -1;
+    }
 	struct node_list *tmp;
 	struct list_head *pos, *q;
 	list_for_each_safe(pos, q, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
-        if ((user_cmd->offset >> PAGE_SHIFT) == tmp->cmd.offset){
-            printk(KERN_INFO "found in ioctl %zu %zu\n",tmp->cmd.offset, user_cmd->offset);
+        if ((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset){
+            printk(KERN_INFO "found in ioctl %zu %zu\n",tmp->cmd.offset, cmd.offset);
             return tmp->cmd.size;
         }
 	}
