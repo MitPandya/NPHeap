@@ -59,6 +59,20 @@ struct node_list {
 struct node_list ndlist;
 struct mutex lock;
 
+int find(struct list_head *pos, struct list_head *q, struct node_list *tmp, struct vm_area_struct *vma) {
+	
+	list_for_each_safe(pos, q, &ndlist.list) {
+		tmp= list_entry(pos, struct node_list, list);
+
+		if (vma->vm_pgoff == tmp->cmd.offset){
+			//vma->vm_start = tmp->km_addr_start;
+			printk(KERN_INFO "found %zu %zu %x \n",tmp->cmd.offset, vma->vm_pgoff);
+			return 1;
+		}
+  	}
+  	return 0;
+}
+
 int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
 {
  // struct node_list pos;
@@ -69,16 +83,7 @@ int npheap_mmap(struct file *filp, struct vm_area_struct *vma)
   unsigned long phys_addr;
   unsigned long size = vma->vm_end - vma->vm_start;
 
-  list_for_each_safe(pos, q, &ndlist.list) {
-	  tmp= list_entry(pos, struct node_list, list);
-
-	  if (vma->vm_pgoff == tmp->cmd.offset){
-		  found = 1;
-		  //vma->vm_start = tmp->km_addr_start;
-		  printk(KERN_INFO "found %zu %zu %x \n",tmp->cmd.offset, vma->vm_pgoff);
-		  break;
-	  }
-  }
+  found = find(pos, q, tmp, vma);
 
   if ( found == 0) {
 	  void *kmemory = kmalloc(size, GFP_KERNEL);
