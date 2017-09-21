@@ -91,8 +91,8 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
         struct node_list *tmp;
         tmp->cmd.offset = cmd.offset >> PAGE_SHIFT;
         tmp->cmd.op = 0;
-        mutex_init(tmp->lock);
-        mutex_lock(tmp->lock);
+        mutex_init(&(tmp->lock));
+        mutex_lock(&(tmp->lock));
         list_add(&(tmp->list), &(ndlist.list));
         return 1;   //pass
     } else if(isLock == 2) {
@@ -101,9 +101,9 @@ long npheap_lock(struct npheap_cmd __user *user_cmd)
         struct list_head *pos, *q;
         list_for_each_safe(pos, q, &ndlist.list) {
             tmp = list_entry(pos, struct node_list, list);
-            if((offset >> PAGE_SHIFT) == tmp->cmd.offset) {
+            if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset) {
                 tmp->cmd.op = 0;
-                mutex_lock(tmp->lock);
+                mutex_lock(&(tmp->lock));
             }
         }
         return 1;   //pass
@@ -126,7 +126,7 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
         //check if offset is same and it was locked before
         if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset && tmp->cmd.op == 0) {
             tmp->cmd.op = 1;
-            mutex_unlock(tmp->lock);
+            mutex_unlock(&(tmp->lock));
             return 1;   //pass
         }
     }
