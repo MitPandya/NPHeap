@@ -58,31 +58,64 @@ struct node_list {
 extern struct node_list ndlist;
 extern struct mutex lock;
 
-// 
-long npheap_lock(struct npheap_cmd __user *user_cmd)
-{
-    /*struct npheap_cmd cmd;
-    if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
-        return -1;
-    }
+long is_locked(__u64 offset) {
     struct node_list *tmp;
     struct list_head *pos, *q;
     list_for_each_safe(pos, q, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
-        if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset){
-            tmp->cmd.op = 0;
-            //mutex_lock(tmp->lock);
-            break;
+        if((offset >> PAGE_SHIFT) == tmp->cmd.offset) {
+            if(tmp->cmd.op == 0) {
+                //found but locked
+                return 1;
+            } else if(tmp->cmd.op == 1) {
+                //found but unlocked
+                return 2;
+            }
         }
-    }*/
-    mutex_lock(&lock);
-
+    }
     return 0;
+}
+
+// 
+long npheap_lock(struct npheap_cmd __user *user_cmd)
+{
+    struct npheap_cmd cmd;
+    if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
+        return -1;
+    }
+
+    long isLock = is_locked(cmd.offset);
+
+    if(isLock == 0) {
+        //creade new node
+        struct node_list *tmp;
+        tmp->cmd.offset = cmd.offset >> PAGE_SHIFT;
+        tmp->cmd.op = 0;
+        mutex_init(tmp->lock);
+        mutex_lock(tmp->lock);
+        list_add(&(tmp->list), &(ndlist.list));
+        return 1;   //pass
+    } else if(isLock == 2) {
+        //lock the existing node
+        struct node_list *tmp;
+        struct list_head *pos, *q;
+        list_for_each_safe(pos, q, &ndlist.list) {
+            tmp = list_entry(pos, struct node_list, list);
+            if((offset >> PAGE_SHIFT) == tmp->cmd.offset) {
+                tmp->cmd.op = 0;
+                mutex_lock(tmp->lock);
+            }
+        }
+        return 1;   //pass
+    }
+    //mutex_lock(&lock);
+
+    return 0;   //fail
 }     
 
 long npheap_unlock(struct npheap_cmd __user *user_cmd)
 {
-    /*struct npheap_cmd cmd;
+    struct npheap_cmd cmd;
     if(copy_from_user(&cmd, user_cmd, sizeof(*user_cmd))) {
         return -1;
     }
@@ -90,14 +123,15 @@ long npheap_unlock(struct npheap_cmd __user *user_cmd)
     struct list_head *pos, *q;
     list_for_each_safe(pos, q, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
-        if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset) {
+        //check if offset is same and it was locked before
+        if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset && tmp->cmd.op == 0) {
             tmp->cmd.op = 1;
-            //mutex_unlock(tmp->lock);
-            break;
+            mutex_unlock(tmp->lock);
+            return 1;   //pass
         }
-    }*/
-    mutex_unlock(&lock);
-    return 0;
+    }
+    //mutex_unlock(&lock);
+    return 0;   //fail
 }
 
 long npheap_getsize(struct npheap_cmd __user *user_cmd)
@@ -111,7 +145,8 @@ long npheap_getsize(struct npheap_cmd __user *user_cmd)
 	list_for_each_safe(pos, q, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
         if ((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset){
-            printk(KERN_INFO "found in ioctl %zu %zu\n",tmp->cmd.offset, cmd.offset);
+            printk(KERN_INFO "found in ioctl %zu %zu\n",tmp->cmd.offset,
+                cmd.offset);
             return tmp->cmd.size;
         }
 	}
@@ -128,13 +163,14 @@ long npheap_delete(struct npheap_cmd __user *user_cmd)
     struct list_head *pos, *q;
     list_for_each_safe(pos, q, &ndlist.list) {
         tmp = list_entry(pos, struct node_list, list);
-        if ((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset){
+        //check if offset is same and its unlocked
+        if((cmd.offset >> PAGE_SHIFT) == tmp->cmd.offset && tmp->cmd.op == 0) {
             //Delete Code
-	    printk(KERN_INFO "deleting node %zu\n",tmp->cmd.offset);
-	    //list_del(pos);
-	    tmp->cmd.size = 0;
+	        printk(KERN_INFO "deleting node %zu\n",tmp->cmd.offset);
+	        //list_del(pos);
+	        tmp->cmd.size = 0;
             kfree(tmp->cmd.data);
-            break;
+            return 1;
         }
     }
     struct node_list *tmp1;
