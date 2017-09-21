@@ -63,16 +63,24 @@ int main(int argc, char *argv[])
     for(i = 0; i < number_of_objects; i++)
     {
         size = npheap_getsize(devfd,i);
-	fprintf(stdout,"size is %d \n", size);
-        if(size!=0){
-        mapped_data = (char *)npheap_alloc(devfd,i,npheap_getsize(devfd,i));
-	}else
+	    fprintf(stdout,"size is %d \n", size);
+        if(size!=0) {
+            mapped_data = (char *)npheap_alloc(devfd,i,npheap_getsize(devfd,i));
+            if(strcmp(mapped_data,obj[i])!=0) {
+                 fprintf(stderr, "Object %d has a wrong value %s v.s. %s\n",i,mapped_data,obj[i]);
+                 error++;
+            }
+	    } else
             mapped_data = NULL;
-	fprintf(stdout, "mapped data is %s \n", mapped_data);
+	    fprintf(stdout, "mapped data is %s \n", mapped_data);
         if(strcmp(mapped_data,obj[i])!=0)
         {
-            fprintf(stderr, "Object %d has a wrong value %s v.s. %s\n",i,mapped_data,obj[i]);
-            error++;
+            mapped_data = NULL;
+            if(strlen(obj[i])!=0)
+            {
+                fprintf(stderr, "Object %d should have a value %s\n",i,obj[i]);
+                error++;
+            }
         }
     }
     if(error == 0)

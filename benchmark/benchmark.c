@@ -49,11 +49,11 @@ int main(int argc, char *argv[])
     for(i = 0; i < number_of_objects; i++)
     {
         npheap_lock(devfd,i);
-        do 
+        size = npheap_getsize(devfd, i);
+        while(size ==0 || size <= 10) 
         {
             size = rand() % max_size_of_objects;
         }
-        while(size ==0 || size <= 10);
         mapped_data = (char *)npheap_alloc(devfd,i,size);
 	//fprintf(stdout,"mapped data is %d \n", strlen(mapped_data));
         if(!mapped_data)
